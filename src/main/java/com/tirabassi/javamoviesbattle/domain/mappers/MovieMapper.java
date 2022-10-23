@@ -1,5 +1,6 @@
 package com.tirabassi.javamoviesbattle.domain.mappers;
 
+import com.tirabassi.javamoviesbattle.domain.entities.Movie;
 import com.tirabassi.javamoviesbattle.domain.models.MovieModel;
 import com.tirabassi.javamoviesbattle.domain.models.obdm.ImdbResponseModel;
 import com.tirabassi.javamoviesbattle.domain.models.obdm.SearchModel;
@@ -19,5 +20,15 @@ public class MovieMapper {
         movieComplete.setImdbRating(imdb.getImdbRating());
 
         return movieComplete;
+    }
+
+    public static MovieModel toModel(Movie movie)
+    {
+        var model = new MovieModel();
+        model.setTitle(movie.getTitle());
+        model.setYear(movie.getYear());
+        model.setPoster(movie.getPoster());
+
+        return model;
     }
 }

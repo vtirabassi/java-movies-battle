@@ -1,5 +1,6 @@
 package com.tirabassi.javamoviesbattle.domain.services.impl;
 
+import com.google.common.base.Strings;
 import com.tirabassi.javamoviesbattle.domain.entities.Movie;
 import com.tirabassi.javamoviesbattle.domain.entities.Rank;
 import com.tirabassi.javamoviesbattle.domain.mappers.MovieMapper;
@@ -14,10 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -79,11 +77,9 @@ public class GameServiceImpl implements GameService {
     @Override
     public RoundModel nextRound(GameModel gameModel) {
 
-        if (MOVIES.stream().count() < 2)
-        {
-            stop(gameModel.getLogin());
-            return new RoundModel("Congratulations! You are finished the game", null);
-        }
+        var validate = validateRound(gameModel);
+        if (!Objects.isNull(validate))
+            return validate;
 
         var message = processUserChoice(gameModel);
 
@@ -93,6 +89,26 @@ public class GameServiceImpl implements GameService {
                 .collect(Collectors.toList());
 
         return new RoundModel(message, nextMovies);
+    }
+
+    private RoundModel validateRound(GameModel gameModel){
+
+        if(Strings.isNullOrEmpty(gameModel.getTitle()))
+        {
+            var actualRound = MOVIES_ACTUAL_ROUND.stream()
+                    .map(movie -> MovieMapper.toModel(movie))
+                    .collect(Collectors.toList());
+
+            return new RoundModel("You have to choose a movie", actualRound);
+        }
+
+        if (MOVIES.stream().count() < 2)
+        {
+            stop(gameModel.getLogin());
+            return new RoundModel("Congratulations! You are finished the game", null);
+        }
+
+        return null;
     }
 
     private String processUserChoice(GameModel gameModel){

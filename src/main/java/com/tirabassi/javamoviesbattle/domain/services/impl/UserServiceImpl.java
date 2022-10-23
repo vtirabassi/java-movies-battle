@@ -1,8 +1,8 @@
 package com.tirabassi.javamoviesbattle.domain.services.impl;
 
+import com.tirabassi.javamoviesbattle.domain.entities.User;
 import com.tirabassi.javamoviesbattle.domain.models.CredentialModel;
 import com.tirabassi.javamoviesbattle.domain.models.TokenModel;
-import com.tirabassi.javamoviesbattle.domain.entities.User;
 import com.tirabassi.javamoviesbattle.domain.models.UserModel;
 import com.tirabassi.javamoviesbattle.domain.repositories.UserRepository;
 import com.tirabassi.javamoviesbattle.exceptions.InvalidPasswordException;
@@ -16,8 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-
-import javax.validation.Valid;
 
 @Service
 public class UserServiceImpl implements UserDetailsService {

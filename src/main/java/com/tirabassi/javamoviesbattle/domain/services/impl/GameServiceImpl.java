@@ -2,20 +2,22 @@ package com.tirabassi.javamoviesbattle.domain.services.impl;
 
 import com.tirabassi.javamoviesbattle.domain.entities.Movie;
 import com.tirabassi.javamoviesbattle.domain.entities.Rank;
+import com.tirabassi.javamoviesbattle.domain.mappers.MovieMapper;
 import com.tirabassi.javamoviesbattle.domain.models.GameModel;
-import com.tirabassi.javamoviesbattle.domain.models.RankModel;
+import com.tirabassi.javamoviesbattle.domain.models.RoundModel;
 import com.tirabassi.javamoviesbattle.domain.repositories.MovieRepository;
 import com.tirabassi.javamoviesbattle.domain.repositories.RankRepository;
 import com.tirabassi.javamoviesbattle.domain.repositories.UserRepository;
 import com.tirabassi.javamoviesbattle.domain.services.GameService;
 import com.tirabassi.javamoviesbattle.exceptions.BusinessException;
-import javafx.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.Tuple;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,9 +55,7 @@ public class GameServiceImpl implements GameService {
         rankRepository.save(rank);
 
         MOVIES = movieRepository.findAll();
-        MOVIES_ACTUAL_ROUND = getOnlyTwoMovies();
-
-        return MOVIES_ACTUAL_ROUND;
+        return getOnlyTwoMovies();
     }
 
     @Transactional
@@ -75,8 +75,33 @@ public class GameServiceImpl implements GameService {
         rankRepository.save(rank);
     }
 
+    @Transactional
     @Override
-    public List<Movie> nextRound(GameModel gameModel) {
+    public RoundModel nextRound(GameModel gameModel) {
+
+        if (MOVIES.stream().count() < 2)
+        {
+            stop(gameModel.getLogin());
+            return new RoundModel("Congratulations! You are finished the game", null);
+        }
+
+        var message = processUserChoice(gameModel);
+
+        var nextMovies = getOnlyTwoMovies()
+                .stream()
+                .map(movie -> MovieMapper.toModel(movie))
+                .collect(Collectors.toList());
+
+        return new RoundModel(message, nextMovies);
+    }
+
+    private String processUserChoice(GameModel gameModel){
+
+        var rank = rankRepository.findByLogin(gameModel.getLogin())
+                .orElse(new Rank());
+
+        if (!rank.isInGame())
+            throw new BusinessException("Player is not in game, please start the game");
 
         var movieWinner = MOVIES_ACTUAL_ROUND
                 .stream()
@@ -86,26 +111,25 @@ public class GameServiceImpl implements GameService {
 
         if(movieWinner.getTitle().equals(gameModel.getTitle()))
         {
-            var rank = rankRepository.findByLogin(gameModel.getLogin())
-                    .orElse(new Rank());
-
             rank.setAnswerCorrects(rank.getAnswerCorrects() + 1);
             rankRepository.save(rank);
+            return "Nice choice";
         }
         else {
             if (ERRORS < 3)
+            {
                 ERRORS++;
+                return String.format("Take care, you have more %s chances",
+                        (3 - ERRORS == 0) ? 1 : 3 - ERRORS);
+            }
             else{
                 stop(gameModel.getLogin());
                 throw new BusinessException("You reached the maximum number of error allowed");
             }
         }
-
-        return getOnlyTwoMovies();
     }
 
     private List<Movie> getOnlyTwoMovies(){
-
         var numberOfInterations = 2;
         var onlyTwoMovies = new ArrayList<Movie>();
 
@@ -115,6 +139,7 @@ public class GameServiceImpl implements GameService {
             MOVIES.remove(randomIndex);
         }
 
-        return onlyTwoMovies;
+        MOVIES_ACTUAL_ROUND = onlyTwoMovies;
+        return MOVIES_ACTUAL_ROUND;
     }
 }

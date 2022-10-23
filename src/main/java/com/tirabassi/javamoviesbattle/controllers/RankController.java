@@ -1,16 +1,15 @@
 package com.tirabassi.javamoviesbattle.controllers;
 
-import com.tirabassi.javamoviesbattle.domain.entities.Rank;
 import com.tirabassi.javamoviesbattle.domain.mappers.RankMapper;
 import com.tirabassi.javamoviesbattle.domain.models.RankModel;
 import com.tirabassi.javamoviesbattle.domain.repositories.RankRepository;
-import com.tirabassi.javamoviesbattle.domain.services.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,8 +29,9 @@ public class RankController {
         var models = ranks.stream().map(rank -> RankMapper.toModel(rank))
                 .collect(Collectors.toList());
 
-        Collections.sort(models, Comparator.comparing(RankModel::getRank));
-
-        return models;
+        return models
+                .stream()
+                .sorted(Comparator.comparing(RankModel::getRank).reversed())
+                .collect(Collectors.toList());
     }
 }

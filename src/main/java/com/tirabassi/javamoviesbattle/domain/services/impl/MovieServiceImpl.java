@@ -1,7 +1,7 @@
 package com.tirabassi.javamoviesbattle.domain.services.impl;
 
-import com.tirabassi.javamoviesbattle.domain.models.MovieModel;
 import com.tirabassi.javamoviesbattle.domain.mappers.MovieMapper;
+import com.tirabassi.javamoviesbattle.domain.models.MovieModel;
 import com.tirabassi.javamoviesbattle.domain.services.MovieService;
 import com.tirabassi.javamoviesbattle.domain.webservices.OmdbWebservice;
 import com.tirabassi.javamoviesbattle.exceptions.BusinessException;
@@ -10,8 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 @Service

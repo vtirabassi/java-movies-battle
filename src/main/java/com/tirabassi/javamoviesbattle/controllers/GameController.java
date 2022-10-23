@@ -1,11 +1,9 @@
 package com.tirabassi.javamoviesbattle.controllers;
 
-import com.tirabassi.javamoviesbattle.domain.entities.Movie;
 import com.tirabassi.javamoviesbattle.domain.mappers.MovieMapper;
-import com.tirabassi.javamoviesbattle.domain.mappers.RankMapper;
 import com.tirabassi.javamoviesbattle.domain.models.GameModel;
 import com.tirabassi.javamoviesbattle.domain.models.MovieModel;
-import com.tirabassi.javamoviesbattle.domain.repositories.MovieRepository;
+import com.tirabassi.javamoviesbattle.domain.models.RoundModel;
 import com.tirabassi.javamoviesbattle.domain.services.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -41,11 +39,7 @@ public class GameController {
 
     @PostMapping("/rounds")
     @ResponseStatus(HttpStatus.OK)
-    public List<MovieModel> nextRound(@RequestBody @Valid GameModel gameModel) {
-        var movies = gameService.nextRound(gameModel);
-
-        return movies.stream()
-                .map(movie -> MovieMapper.toModel(movie))
-                .collect(Collectors.toList());
+    public RoundModel nextRound(@RequestBody @Valid GameModel gameModel) {
+        return gameService.nextRound(gameModel);
     }
 }

@@ -19,55 +19,20 @@ public class DatabaseInitializer {
 
     @Bean
     CommandLineRunner loadDatabase() {
-        return new CommandLineRunner() {
+        return args -> {
 
-            @Override
-            public void run(String... args) throws Exception {
+            var movies = movieService.searchMoviesWithCompleteInfo("movie", "marvel", 1);
 
-                var movies = movieService.searchMoviesWithCompleteInfo("movie", "marvel", 1);
+            movies.forEach(movie ->
+                    {
+                        var movieDomain = new Movie();
+                        movieDomain.setTitle(movie.getTitle());
+                        movieDomain.setYear(movie.getYear());
+                        movieDomain.setPoster(movieDomain.getPoster());
+                        movieDomain.setRating((movie.getImdbRating()));
 
-                movies.forEach(movie ->
-                        {
-                            var movieDomain = new Movie();
-                            movieDomain.setTitle(movie.getTitle());
-                            movieDomain.setYear(movie.getYear());
-                            movieDomain.setPoster(movieDomain.getPoster());
-                            movieDomain.setRating((movie.getImdbRating()));
-
-                            movieRepository.save(movieDomain);
-                        });
-
-//                var movieDomain = new Movie();
-//                movieDomain.setTitle("Teste");
-//                movieDomain.setYear("2022");
-//                movieDomain.setPoster("img");
-//                movieDomain.setRate((7.5));
-//
-//                movieRepository.save(movieDomain);
-//
-//                var movieDomain2 = new Movie();
-//                movieDomain.setTitle("Teste2");
-//                movieDomain.setYear("2022");
-//                movieDomain.setPoster("img");
-//                movieDomain.setRate((8.0));
-//
-//                movieRepository.save(movieDomain2);
-//
-//                var movieDomain3 = new Movie();
-//                movieDomain.setTitle("Teste3");
-//                movieDomain.setYear("2022");
-//                movieDomain.setPoster("img");
-//                movieDomain.setRate((5.0));
-//
-//                movieRepository.save(movieDomain3);
-//                var movieDomain4 = new Movie();
-//                movieDomain.setTitle("Teste4");
-//                movieDomain.setYear("2022");
-//                movieDomain.setPoster("img");
-//                movieDomain.setRate((10.0));
-//
-//                movieRepository.save(movieDomain4);
-            }
+                        movieRepository.save(movieDomain);
+                    });
         };
     }
 }

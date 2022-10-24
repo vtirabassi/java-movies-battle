@@ -3,7 +3,7 @@ package com.tirabassi.javamoviesbattle.domain.webservices.impl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tirabassi.javamoviesbattle.domain.models.obdm.ImdbResponseModel;
-import com.tirabassi.javamoviesbattle.domain.models.obdm.ObdmResponseModel;
+import com.tirabassi.javamoviesbattle.domain.models.obdm.OmdbResponseModel;
 import com.tirabassi.javamoviesbattle.domain.webservices.OmdbWebservice;
 import org.springframework.stereotype.Service;
 
@@ -16,16 +16,13 @@ import java.net.http.HttpResponse;
 @Service
 public class OmdbWebserviceImpl implements OmdbWebservice {
 
-//    @Autowired
-//    private HttpClient httpClient;
-
-            private final HttpClient httpClient = HttpClient.newBuilder()
-                .version(HttpClient.Version.HTTP_2)
-                .build();
+    private final HttpClient httpClient = HttpClient.newBuilder()
+        .version(HttpClient.Version.HTTP_2)
+        .build();
 
 
     @Override
-    public ObdmResponseModel searchMovies(String type, String name, Integer page) throws IOException, InterruptedException {
+    public OmdbResponseModel searchMovies(String type, String name, Integer page) throws IOException, InterruptedException {
 
         var url = String.format("http://www.omdbapi.com/?apikey=598db42f&type=%s&s=%s&page=%s", type, name, page);
 
@@ -37,7 +34,7 @@ public class OmdbWebserviceImpl implements OmdbWebservice {
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
         var mapper = new ObjectMapper();
-        var obdmResponse = mapper.readValue(response.body(), new TypeReference<ObdmResponseModel>() {});
+        var obdmResponse = mapper.readValue(response.body(), new TypeReference<OmdbResponseModel>() {});
 
         return obdmResponse;
     }

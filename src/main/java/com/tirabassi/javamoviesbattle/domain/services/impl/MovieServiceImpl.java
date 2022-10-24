@@ -22,7 +22,7 @@ public class MovieServiceImpl implements MovieService {
     public List<MovieModel> searchMoviesWithCompleteInfo(String type, String name, Integer page) throws IOException, InterruptedException {
 
         var moviesModel = new ArrayList<MovieModel>();
-        var movies = omdbWebservice.searchMovies("movie", "marvel", 1);
+        var movies = omdbWebservice.searchMovies(type, name, page);
 
         movies.getSearch().forEach(movie -> {
             try {

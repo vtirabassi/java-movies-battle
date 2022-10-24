@@ -39,7 +39,7 @@ public class GameServiceImpl implements GameService {
     public List<Movie> starter(String login) {
 
         var user = userRepository.findByLogin(login)
-                .orElseThrow(() -> new BusinessException("Not Found"));
+                .orElseThrow(() -> new BusinessException("Not Found user"));
 
         var rank = rankRepository.findByLogin(login)
                 .orElse(new Rank());
@@ -60,7 +60,7 @@ public class GameServiceImpl implements GameService {
     @Override
     public void stop(String login) {
         var rank = rankRepository.findByLogin(login)
-                .orElseThrow(() -> new BusinessException("Not Found"));
+                .orElseThrow(() -> new BusinessException("Not Found rank"));
 
         if (!rank.isInGame())
             throw new BusinessException("Player is not in game");
